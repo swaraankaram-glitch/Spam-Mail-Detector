@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Spam Message Classifier
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+    <!-- HEADER -->
+
+    <header>
+
+        <h1>
+            Spam Message Classifier
+        </h1>
+
+        <p>
+            Detect whether an SMS or email message is
+            <strong>Spam</strong> or
+            <strong>Not Spam</strong>.
+        </p>
+
+    </header>
+
+
+    <!-- CLASSIFIER -->
+
+    <div class="card">
+
+        <label for="message">
+
+            Enter Message
+
+        </label>
+
+
+        <textarea
+            id="message"
+            placeholder="Type or paste your SMS or email message here..."
+        ></textarea>
+
+
+        <button id="checkButton">
+
+            🔍 Check Message
+
+        </button>
+
+
+        <!-- LOADING -->
+
+        <div
+            id="loading"
+            class="loading hidden"
+        >
+
+            Analyzing message...
+
+        </div>
+
+
+        <!-- RESULT -->
+
+        <div
+            id="result"
+            class="result hidden"
+        >
+
+            <div
+                id="resultIcon"
+                class="result-icon"
+            ></div>
+
+
+            <h2 id="resultText"></h2>
+
+
+            <p>
+
+                Confidence:
+                <strong id="confidence"></strong>
+
+            </p>
+
+
+            <div class="probabilities">
+
+
+                <div class="probability-box">
+
+                    <span>
+                        Spam Probability
+                    </span>
+
+                    <strong id="spamProbability">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <div class="probability-box">
+
+                    <span>
+                        Not Spam Probability
+                    </span>
+
+                    <strong id="hamProbability">
+                        -
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- FEATURES -->
+
+    <div class="features">
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                📱
+            </div>
+
+            <h3>
+                SMS Detection
+            </h3>
+
+            <p>
+                Detect suspicious and promotional
+                SMS messages.
+            </p>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                📧
+            </div>
+
+            <h3>
+                Email Detection
+            </h3>
+
+            <p>
+                Analyze email content for potential
+                spam.
+            </p>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                🤖
+            </div>
+
+            <h3>
+                Machine Learning
+            </h3>
+
+            <p>
+                Uses TF-IDF and Naive Bayes
+                classification.
+            </p>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<script
+    src="{{ url_for('static', filename='script.js') }}"
+></script>
+
+</body>
+
+</html>
