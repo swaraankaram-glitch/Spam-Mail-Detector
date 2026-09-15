@@ -1,214 +1,260 @@
-<!DOCTYPE html>
-
+﻿<!doctype html>
 <html lang="en">
-
-<head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>
-        Spam Message Classifier
-    </title>
-
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SpamGuard | Dashboard</title>
     <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}"
-    >
-
-</head>
-
-
-<body>
-
-<div class="container">
-
-
-    <!-- HEADER -->
-
-    <header>
-
-        <h1>
-            Spam Message Classifier
-        </h1>
-
-        <p>
-            Detect whether an SMS or email message is
-            <strong>Spam</strong> or
-            <strong>Not Spam</strong>.
-        </p>
-
-    </header>
-
-
-    <!-- CLASSIFIER -->
-
-    <div class="card">
-
-        <label for="message">
-
-            Enter Message
-
-        </label>
-
-
-        <textarea
-            id="message"
-            placeholder="Type or paste your SMS or email message here..."
-        ></textarea>
-
-
-        <button id="checkButton">
-
-            🔍 Check Message
-
-        </button>
-
-
-        <!-- LOADING -->
-
-        <div
-            id="loading"
-            class="loading hidden"
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <script defer src="{{ url_for('static', filename='script.js') }}"></script>
+  </head>
+  <body>
+    <aside class="sidebar">
+      <a class="brand" href="#overview"
+        ><span class="brand-icon">S</span>SpamGuard<span class="brand-dot"
+          >.</span
+        ></a
+      >
+      <div class="workspace">WORKSPACE</div>
+      <nav aria-label="Main navigation">
+        <a class="active" href="#overview">▦ <span>Overview</span></a
+        ><a href="#tester">⌕ <span>Message tester</span></a
+        ><a href="#activity">≡ <span>Activity log</span></a
+        ><a href="#performance">◈ <span>Model performance</span></a>
+      </nav>
+      <div class="sidebar-note">
+        <span class="online"></span> Local analysis<br /><small
+          >Your messages stay on this server.</small
         >
-
-            Analyzing message...
-
+      </div>
+      <div class="profile">
+        <span class="avatar">SG</span>
+        <div>Personal workspace<small>Spam detection console</small></div>
+      </div>
+    </aside>
+    <main id="overview">
+      <div class="topbar">
+        <span
+          >Workspace <span class="slash">/</span>
+          <strong>Overview</strong></span
+        ><span class="system"><i class="online"></i> System ready</span>
+      </div>
+      <header>
+        <div class="eyebrow">YOUR INBOX, UNDER CONTROL</div>
+        <div class="heading-row">
+          <div>
+            <h1>Dashboard Overview</h1>
+            <p>A clearer picture of what gets through. And what shouldn't.</p>
+          </div>
+          <span class="date" id="today"></span>
         </div>
-
-
-        <!-- RESULT -->
-
-        <div
-            id="result"
-            class="result hidden"
-        >
-
+      </header>
+      <section class="kpis" aria-label="Key metrics">
+        <article class="card metric">
+          <div class="metric-label">
+            Total Scanned <span class="metric-icon">↗</span>
+          </div>
+          <strong id="totalScanned">0</strong
+          ><small>Messages in this session</small>
+        </article>
+        <article class="card metric">
+          <div class="metric-label">
+            Spam Flagged <span class="metric-icon orange">⊘</span>
+          </div>
+          <strong id="spamBlocked">0</strong
+          ><small>Detected for your review</small>
+        </article>
+        <article class="card metric">
+          <div class="metric-label">
+            Detection Accuracy <span class="metric-icon green">◎</span>
+          </div>
+          <strong id="accuracy">—</strong
+          ><small>Measured on held-out SMS data</small>
+        </article>
+      </section>
+      <div class="dashboard-grid">
+        <div class="left-column">
+          <section class="card trends">
+            <div class="section-head">
+              <div>
+                <h2>Spam vs. Clean Trends</h2>
+                <p>Your scans over the last 7 days</p>
+              </div>
+              <span class="chip">7 days</span>
+            </div>
+            <div class="legend">
+              <span><i class="dot teal"></i>Clean</span
+              ><span><i class="dot coral"></i>Spam</span>
+            </div>
             <div
-                id="resultIcon"
-                class="result-icon"
+              id="trendChart"
+              class="chart"
+              role="img"
+              aria-label="Daily clean and spam scans"
             ></div>
-
-
-            <h2 id="resultText"></h2>
-
-
-            <p>
-
-                Confidence:
-                <strong id="confidence"></strong>
-
-            </p>
-
-
-            <div class="probabilities">
-
-
-                <div class="probability-box">
-
-                    <span>
-                        Spam Probability
-                    </span>
-
-                    <strong id="spamProbability">
-                        -
-                    </strong>
-
+            <div id="trendDays" class="day-labels"></div>
+          </section>
+          <section class="card categories">
+            <div>
+              <h2>Spam Categories</h2>
+              <p>Keyword-based grouping of flagged messages</p>
+              <ul id="categoryLegend" class="category-legend"></ul>
+            </div>
+            <div id="donut" class="donut">
+              <div>
+                <strong id="categoryTotal">0</strong><small>flagged</small>
+              </div>
+            </div>
+          </section>
+          <section id="activity" class="card activity">
+            <div class="section-head">
+              <div>
+                <h2>Recent Activity Log</h2>
+                <p>Messages analyzed during this page session</p>
+              </div>
+              <select id="statusFilter" aria-label="Filter activity status">
+                <option value="all">All messages</option>
+                <option value="SPAM">Spam</option>
+                <option value="NOT SPAM">Clean</option>
+              </select>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">
+                      <button data-sort="message">Message ↕</button>
+                    </th>
+                    <th scope="col">
+                      <button data-sort="result">Status ↕</button>
+                    </th>
+                    <th scope="col">
+                      <button data-sort="confidence">Confidence ↕</button>
+                    </th>
+                    <th scope="col">
+                      <button data-sort="time">Time ↕</button>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="activityRows"></tbody>
+              </table>
+            </div>
+            <div class="table-footer">
+              <span id="activityCount">0 messages</span
+              ><span>History clears when you reload</span>
+            </div>
+          </section>
+        </div>
+        <div class="right-column">
+          <section id="tester" class="card tester">
+            <div class="section-head">
+              <div>
+                <h2>Interactive Tester</h2>
+                <p>A second opinion, in a split second.</p>
+              </div>
+              <span class="ai-chip">AI</span>
+            </div>
+            <form id="testForm">
+              <label for="messageInput">Message content</label
+              ><textarea
+                id="messageInput"
+                maxlength="10000"
+                placeholder="Paste an SMS or email message to analyze…"
+              >
+Congratulations! You've won a free cash prize. Call now to claim your reward!</textarea
+              >
+              <div class="input-meta">
+                <button type="button" id="sampleButton">
+                  Try a clean example</button
+                ><span id="charCount"></span>
+              </div>
+              <button id="checkButton" class="primary" type="submit">
+                Analyze message <span>↗</span>
+              </button>
+            </form>
+            <p id="error" role="alert" class="error" hidden></p>
+            <div class="result" aria-live="polite">
+              <div id="gauge" class="gauge">
+                <div>
+                  <strong id="spamProbability">—</strong
+                  ><small>spam probability</small>
                 </div>
-
-
-                <div class="probability-box">
-
-                    <span>
-                        Not Spam Probability
-                    </span>
-
-                    <strong id="hamProbability">
-                        -
-                    </strong>
-
+              </div>
+              <h3 id="resultText">Ready when you are</h3>
+              <p id="confidence">
+                Analyze a message to see the model's prediction.
+              </p>
+            </div>
+            <div id="explanation" hidden>
+              <div class="explanation-title">
+                Words contributing toward spam
+              </div>
+              <p id="highlightedMessage"></p>
+              <small
+                >Model evidence, not a complete explanation or a
+                guarantee.</small
+              >
+            </div>
+          </section>
+          <section id="performance" class="card performance">
+            <div class="section-head">
+              <div>
+                <h2>Model Performance</h2>
+                <p>Behind the predictions</p>
+              </div>
+              <span class="chip">Holdout</span>
+            </div>
+            <p id="metricsError" class="error" role="status" hidden></p>
+            <div class="performance-charts">
+              <div>
+                <h3>Confusion matrix</h3>
+                <div class="axis-label">Predicted: Clean / Spam</div>
+                <div id="matrix" class="matrix">
+                  <div>—<small>True clean</small></div>
+                  <div>—<small>False spam</small></div>
+                  <div>—<small>Missed spam</small></div>
+                  <div>—<small>True spam</small></div>
                 </div>
-
-
+                <small>Rows: actual clean / spam</small>
+              </div>
+              <div>
+                <h3>ROC curve</h3>
+                <div
+                  id="rocChart"
+                  class="roc"
+                  role="img"
+                  aria-label="Receiver operating characteristic curve"
+                ></div>
+                <small>False positive rate →</small>
+                <div class="auc" id="auc">AUC —</div>
+              </div>
             </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- FEATURES -->
-
-    <div class="features">
-
-
-        <div class="feature">
-
-            <div class="feature-icon">
-                📱
-            </div>
-
-            <h3>
-                SMS Detection
-            </h3>
-
-            <p>
-                Detect suspicious and promotional
-                SMS messages.
+            <dl class="model-info">
+              <div>
+                <dt>Algorithm</dt>
+                <dd>Multinomial Naive Bayes</dd>
+              </div>
+              <div>
+                <dt>Text features</dt>
+                <dd>TF-IDF</dd>
+              </div>
+              <div>
+                <dt>Evaluation</dt>
+                <dd id="evaluation">Loading…</dd>
+              </div>
+            </dl>
+            <p class="model-note">
+              Trained on SMS messages. Email performance may differ.
             </p>
-
+          </section>
         </div>
-
-
-        <div class="feature">
-
-            <div class="feature-icon">
-                📧
-            </div>
-
-            <h3>
-                Email Detection
-            </h3>
-
-            <p>
-                Analyze email content for potential
-                spam.
-            </p>
-
-        </div>
-
-
-        <div class="feature">
-
-            <div class="feature-icon">
-                🤖
-            </div>
-
-            <h3>
-                Machine Learning
-            </h3>
-
-            <p>
-                Uses TF-IDF and Naive Bayes
-                classification.
-            </p>
-
-        </div>
-
-
-    </div>
-
-</div>
-
-
-<script
-    src="{{ url_for('static', filename='script.js') }}"
-></script>
-
-</body>
-
+      </div>
+      <footer>
+        SpamGuard <span>Thoughtful filtering. Clearer communication.</span
+        ><span>Local ML · No external AI service</span>
+      </footer>
+    </main>
+  </body>
 </html>
